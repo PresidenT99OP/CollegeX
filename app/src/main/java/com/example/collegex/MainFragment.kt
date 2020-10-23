@@ -17,27 +17,34 @@ class MainFragment : Fragment() {
 
 
     private lateinit var viewModel: MainViewModel
-    private lateinit var binding : MainFragmentBinding
+    private lateinit var binding: MainFragmentBinding
+    private lateinit var adapter: NotesListAdapter
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-        binding = MainFragmentBinding.inflate(inflater , container , false)
+        binding = MainFragmentBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        with(binding.recyclerView){
+        with(binding.recyclerView) {
             setHasFixedSize(true)
             val divider = DividerItemDecoration(
-                context, LinearLayoutManager(context).orientation
+                    context, LinearLayoutManager(context).orientation
             )
             addItemDecoration(divider)
 
         }
 
-        viewModel.notesList.observe(viewLifecycleOwner , Observer {
-            Log.i("Note Logging" , it.toString())
+
+        viewModel.notesList.observe(viewLifecycleOwner, Observer {
+            Log.i("Note Logging", it.toString())
+            adapter = NotesListAdapter(it)
+            binding.recyclerView.adapter = adapter
+
+            binding.recyclerView.layoutManager = LinearLayoutManager(activity)
+
         })
         return binding.root
     }
