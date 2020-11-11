@@ -13,7 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.collegex.data.NoteEntity
 import com.example.collegex.databinding.MainFragmentBinding
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -37,6 +37,8 @@ class MainFragment : Fragment(),
             .supportActionBar?.setDisplayHomeAsUpEnabled(false)
         setHasOptionsMenu(true)
 
+        requireActivity().title = getString(R.string.app_name)
+
         binding = MainFragmentBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
@@ -57,7 +59,14 @@ class MainFragment : Fragment(),
 
             binding.recyclerView.layoutManager = LinearLayoutManager(activity)
 
+            val selectedNotes =
+                savedInstanceState?.getParcelableArrayList<NoteEntity>(SELECTED_NOTES_kEY)
+            adapter.selectedNotes.addAll(selectedNotes ?: emptyList())
         })
+
+        binding.floatingActionButton.setOnClickListener {
+            editNote(NEW_NOTE_ID)
+        }
         return binding.root
     }
 
@@ -91,9 +100,11 @@ class MainFragment : Fragment(),
 
     }
 
+    @InternalCoroutinesApi
     private fun deleteAll(): Boolean {
 
         viewModel.deleteAllNote()
+        return true
     }
 
     @InternalCoroutinesApi
@@ -115,7 +126,7 @@ class MainFragment : Fragment(),
     }
 
 
-    override fun onItemClick(noteId: Int) {
+    override fun editNote(noteId: Int) {
 
         Log.i(TAG, "On Item Click : received id $noteId")
         Toast.makeText(activity , "$noteId", Toast.LENGTH_SHORT).show()
@@ -127,4 +138,12 @@ class MainFragment : Fragment(),
         requireActivity().invalidateOptionsMenu()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        if(this::adapter.isInitialized){
+            outState.putParcelableArrayList(SELECTED_NOTES_kEY,
+            adapter.selectedNotes)
+        }
+
+        super.onSaveInstanceState(outState)
+    }
 }

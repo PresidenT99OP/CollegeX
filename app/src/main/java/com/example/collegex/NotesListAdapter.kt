@@ -13,7 +13,7 @@ class NotesListAdapter(private val notesList : List<NoteEntity>,
 
     val selectedNotes = arrayListOf<NoteEntity>()
 
-    inner class ViewHolder(itemView: View):
+    class ViewHolder(itemView: View):
         RecyclerView.ViewHolder(itemView){
         val binding = ListItemBinding.bind(itemView)
 
@@ -32,7 +32,7 @@ class NotesListAdapter(private val notesList : List<NoteEntity>,
         with(p0.binding){
             txtNote.text = note.text
             root.setOnClickListener{
-                listener.onItemClick(note.id)
+                listener.editNote(note.id)
             }
             fab.setOnClickListener {
                 if(selectedNotes.contains(note)) {
@@ -57,7 +57,7 @@ class NotesListAdapter(private val notesList : List<NoteEntity>,
     override fun getItemCount() = notesList.size
 
     interface ListItemListener {
-        fun onItemClick(noteId : Int)
+        fun editNote(noteId : Int)
         fun onItemSelectionChange()
     }
 }
